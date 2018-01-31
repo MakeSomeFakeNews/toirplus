@@ -1,8 +1,5 @@
 IncludeFile("Lib\\TOIR_SDK.lua")
 
-local function PrintChat(msg) --Credits to Shulepong kappa
-	return __PrintTextGame("<b><font color=\"#4286f4\">[Diabaths] </font></b> </font><font color=\"#c5eff7\"> " .. msg .. " </font><b><font color=\"#4286f4\"></font></b> </font>")
-end
 
 Soraka = class()
 
