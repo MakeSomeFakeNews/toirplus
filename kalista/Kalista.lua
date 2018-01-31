@@ -23,7 +23,6 @@ function Kalista:__init()
 	Callback.Add("Tick", function(...) self:OnTick(...) end)
 	Callback.Add("Draw", function(...) self:OnDraw(...) end)
 	Callback.Add("DrawMenu", function(...) self:OnDrawMenu(...) end)
-	Callback.Add("UpdateBuff", function(...) self:OnUpdateBuff(...) end)
 	
 	self:KalistaMenu()
 end
@@ -60,7 +59,6 @@ function Kalista:OnDrawMenu()
 		if Menu_Begin("Combo Setting") then
 			self.combo_Q = Menu_Bool("Use Q in Combo", self.combo_Q, self.menu)
 			self.combo_E = Menu_Bool("Use E in Combo", self.combo_E, self.menu)
-			self.auto_R = Menu_Bool("Auto R in Combo", self.auto_R, self.menu)
 			Menu_End()
 		end
 		if Menu_Begin("Harass Setting") then
@@ -97,7 +95,16 @@ function Kalista:OnTick()
 	if GetKeyPress(self.Combo) > 0 then
 		self:KalistaCombo()
     end
-	
+	if GetKeyPress(self.Lane_Clear) >0 then
+		self:clearLogic()
+	end
+	if GetKeyPress(self.Harass) > 0 then
+		if myHero.MP / myHero.MaxMP * 100 > self.clear_mana 
+		and self.harass_Q
+		then
+			self:KalistaCombo()
+		end
+	end
 	self:AutoR()
 	
 end
@@ -121,7 +128,7 @@ function Kalista:EnemyMinionsTbl()
     end
     return result
 end
----
+
 function Kalista:canKillMinion()
 	for i, minions in ipairs(self:EnemyMinionsTbl()) do
 		local minion = GetUnit(minions)
@@ -141,7 +148,6 @@ function Kalista:canKill(unit)
 end
 
 function Kalista:KalistaCombo()
-	self:printBuffName()
 	local TargetQ = GetTargetSelector(self.Q.range)
 	if TargetQ ~= nil and TargetQ ~= 0 and self.combo_Q and CanCast(_Q) then
 		target = GetAIHero(TargetQ)
@@ -170,6 +176,19 @@ function Kalista:KalistaCombo()
 	end
 end
 
+function Kalista:clearLogic()
+	if CanCast(_Q) 
+	and myHero.MP / myHero.MaxMP * 100 > self.clear_mana 
+	and self.clear_Q 
+	then
+		if (GetObjName(GetTargetOrb()) ~= "PlantSatchel" and GetObjName(GetTargetOrb()) ~= "PlantHealth" and GetObjName(GetTargetOrb()) ~= "PlantVision") then
+			target = GetUnit(GetTargetOrb())
+	    	local CastPosition, HitChance, Position = vpred:GetLineCastPosition(target, self.Q.delay, self.Q.width, self.Q.range, self.Q.speed, myHero, false)
+			CastSpellToPos(CastPosition.x, CastPosition.z, _Q)
+		end
+	end
+end
+
 function Kalista:AutoR()
 	--kalistacoopstrikeally
 	if self.auto_Save then
@@ -187,15 +206,15 @@ function Kalista:AutoR()
 end
 
 function Kalista:OnDraw()
-
-end
-
-function Kalista:OnUpdateBuff(unit, buff)
-	if GetChampName(unit.Addr) == "Vladimir" then
-		__PrintTextGame("Kalista--"..buff.Name)
+	if self.draw_Q then
+		DrawCircleGame(myHero.x , myHero.y, myHero.z, self.Q.range, Lua_ARGB(255,255,0,0))
 	end
 	
+	if self.draw_E then
+		DrawCircleGame(myHero.x , myHero.y, myHero.z, self.Q.range, Lua_ARGB(255,255,0,0))
+	end
 end
+
 
 function Kalista:MenuBool(stringKey, bool)
 	return ReadIniBoolean(self.menu, stringKey, bool)
