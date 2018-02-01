@@ -41,7 +41,7 @@ function Janna:__init()
 	
 	self.isQactive = false
 	self.qtime = 0
-
+	self.lastQtime = 0
 	
 	self.Q:SetSkillShot(0.5, 1750, 120, false)
 	self.W:SetTargetted()
