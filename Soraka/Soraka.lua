@@ -127,7 +127,15 @@ function Soraka:OnTick()
 end
 
 function Soraka:OnDraw()
-	
+	if self.draw_Q and CanCast(_Q) then
+		DrawCircleGame(myHero.x,myHero.y,myHero.z,self.Q.range,Lua_ARGB(255,255,0,0))
+	end
+	if self.draw_W and CanCast(_W) then
+		DrawCircleGame(myHero.x,myHero.y,myHero.z,self.W.range,Lua_ARGB(255,0,255,0))
+	end
+	if self.draw_E and CanCast(_E) then
+		DrawCircleGame(myHero.x,myHero.y,myHero.z,self.E.range,Lua_ARGB(255,0,0,255))
+	end
 end
 
 
